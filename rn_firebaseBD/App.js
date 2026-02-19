@@ -6,6 +6,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  FlatList,
 } from 'react-native';
 import { db } from './src/firebaseConnection';
 import {
@@ -15,14 +16,21 @@ import {
   setDoc,
   collection,
   addDoc,
+  getDocs,
+  updateDoc,
 } from 'firebase/firestore';
+import { UsersList } from './src/users';
+import { FormUsers } from './src/FormUsers';
 
 export default function App() {
   const [nome, setNome] = useState('');
   const [idade, setIdade] = useState('');
   const [cargo, setCargo] = useState('');
 
+  const [users, setUsers] = useState('');
+
   const [showForm, setShowForm] = useState(true);
+  const [isEditing, setIsEditing] = useState('');
 
   useEffect(() => {
     async function getDados() {
@@ -39,6 +47,39 @@ export default function App() {
       // onSnapshot(doc(db, 'users', '1'), doc => {
       //   setNome(doc.data()?.nome);
       // });
+      const usersRef = collection(db, 'users');
+
+      // getDocs(usersRef)
+      //   .then(snapshot => {
+      //     let lista = [];
+
+      //     snapshot.forEach(doc => {
+      //       lista.push({
+      //         id: doc.id,
+      //         nome: doc.data().nome,
+      //         idade: doc.data().idade,
+      //         cargo: doc.data().cargo,
+      //       });
+      //     });
+      //     setUsers(lista);
+      //   })
+      //   .catch(err => {
+      //     console.log(err);
+      //   });
+
+      onSnapshot(usersRef, snapshot => {
+        let lista = [];
+
+        snapshot.forEach(doc => {
+          lista.push({
+            id: doc.id,
+            nome: doc.data().nome,
+            idade: doc.data().idade,
+            cargo: doc.data().cargo,
+          });
+        });
+        setUsers(lista);
+      });
     }
     getDados();
   }, []);
@@ -80,6 +121,28 @@ export default function App() {
   function handleTogle() {
     setShowForm(!showForm);
   }
+
+  function editUser(data) {
+    setNome(data.nome);
+    setIdade(data.idade);
+    setCargo(data.cargo);
+    setIsEditing(data.id);
+  }
+
+  async function handleEditUser() {
+    const docRef = doc(db, 'users', isEditing);
+
+    await updateDoc(docRef, {
+      nome: nome,
+      idade: idade,
+      cargo: cargo,
+    });
+    setNome('');
+    setIdade('');
+    setCargo('');
+    setIsEditing('');
+  }
+
   return (
     <View style={est.container}>
       <StatusBar hidden={true} />
@@ -109,9 +172,15 @@ export default function App() {
             value={cargo}
             onChangeText={text => setCargo(text)}
           />
-          <TouchableOpacity style={est.button} onPress={handleRegister}>
-            <Text style={est.buttonText}>Adicionar</Text>
-          </TouchableOpacity>
+          {isEditing !== '' ? (
+            <TouchableOpacity style={est.button} onPress={handleEditUser}>
+              <Text style={est.buttonText}>Editar Usuário</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity style={est.button} onPress={handleRegister}>
+              <Text style={est.buttonText}>Adicionar</Text>
+            </TouchableOpacity>
+          )}
         </View>
       )}
 
@@ -120,6 +189,19 @@ export default function App() {
           {showForm ? 'Esconder Formulário' : 'Mostrar Formulário'}
         </Text>
       </TouchableOpacity>
+
+      <Text style={{ marginTop: 14, marginLeft: 8, color: '#000' }}>
+        Usuários
+      </Text>
+
+      <FlatList
+        style={est.list}
+        data={users}
+        keyExtractor={item => String(item.id)}
+        renderItem={({ item }) => (
+          <UsersList data={item} handleEdit={item => editUser(item)} />
+        )}
+      />
     </View>
   );
 }
@@ -128,12 +210,6 @@ const est = StyleSheet.create({
   container: {
     flex: 1,
     paddingTop: 40,
-  },
-  label: {
-    color: '#000',
-    fontSize: 18,
-    marginBottom: 4,
-    marginLeft: 8,
   },
   input: {
     marginLeft: 8,
@@ -150,5 +226,10 @@ const est = StyleSheet.create({
   buttonText: {
     color: '#FFF',
     textAlign: 'center',
+  },
+  list: {
+    marginTop: 8,
+    marginLeft: 8,
+    marginRight: 8,
   },
 });
