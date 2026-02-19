@@ -1,0 +1,154 @@
+import React, { useEffect, useState } from 'react';
+import {
+  View,
+  Text,
+  StatusBar,
+  StyleSheet,
+  TouchableOpacity,
+  TextInput,
+} from 'react-native';
+import { db } from './src/firebaseConnection';
+import {
+  doc,
+  getDoc,
+  onSnapshot,
+  setDoc,
+  collection,
+  addDoc,
+} from 'firebase/firestore';
+
+export default function App() {
+  const [nome, setNome] = useState('');
+  const [idade, setIdade] = useState('');
+  const [cargo, setCargo] = useState('');
+
+  const [showForm, setShowForm] = useState(true);
+
+  useEffect(() => {
+    async function getDados() {
+      // const docref = doc(db, 'users', '1');
+      // getDoc(docref)
+      //   .then(snapshot => {
+      //     setNome(snapshot.data()?.nome);
+      //   })
+      //   .catch(err => {
+      //     console.log('error: ');
+      //     console.log(err);
+      //   });
+      //SEPARA O CODIGO
+      // onSnapshot(doc(db, 'users', '1'), doc => {
+      //   setNome(doc.data()?.nome);
+      // });
+    }
+    getDados();
+  }, []);
+
+  async function handleRegister() {
+    // await setDoc(doc(db, 'users', '4'), {
+    //   nome: 'Lex Luthor',
+    //   idade: '52',
+    //   cargo: 'Empresario',
+    // })
+    //   .then(() => {
+    //     console.log('Cadastrado com sucesso!!');
+    //   })
+    //   .catch(erro => {
+    //     console.log(erro);
+    //   });
+    //ADDOC
+    // await addDoc(collection(db, 'users'), {
+    //   nome: 'Tony Stark',
+    //   idade: '56',
+    //   cargo: 'Playboy',
+    // });
+    await addDoc(collection(db, 'users'), {
+      nome: nome,
+      idade: idade,
+      cargo: cargo,
+    })
+      .then(() => {
+        console.log('Cadastrado com sucesso!!!');
+        setNome('');
+        setIdade('');
+        setCargo('');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  }
+
+  function handleTogle() {
+    setShowForm(!showForm);
+  }
+  return (
+    <View style={est.container}>
+      <StatusBar hidden={true} />
+      {showForm && (
+        <View>
+          {/* <Text style={{ color: '#000', fontSize: 16, marginBottom: 4 }}> */}
+          <Text style={est.label}>Nome:</Text>
+          <TextInput
+            style={est.input}
+            placeholder="Digite seu nome..."
+            value={nome}
+            onChangeText={text => setNome(text)}
+          />
+
+          <Text style={est.label}>Idade:</Text>
+          <TextInput
+            style={est.input}
+            placeholder="Digite seu idade..."
+            value={idade}
+            onChangeText={text => setIdade(text)}
+          />
+
+          <Text style={est.label}>Cargo:</Text>
+          <TextInput
+            style={est.input}
+            placeholder="Digite seu cargo..."
+            value={cargo}
+            onChangeText={text => setCargo(text)}
+          />
+          <TouchableOpacity style={est.button} onPress={handleRegister}>
+            <Text style={est.buttonText}>Adicionar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <TouchableOpacity style={{ marginTop: 8 }} onPress={handleTogle}>
+        <Text style={{ textAlign: 'center' }}>
+          {showForm ? 'Esconder Formulário' : 'Mostrar Formulário'}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const est = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 40,
+  },
+  label: {
+    color: '#000',
+    fontSize: 18,
+    marginBottom: 4,
+    marginLeft: 8,
+  },
+  input: {
+    marginLeft: 8,
+    marginRight: 8,
+    borderWidth: 1,
+    marginBottom: 14,
+  },
+  button: {
+    backgroundColor: '#000',
+    marginRight: 8,
+    marginLeft: 8,
+    padding: 8,
+  },
+  buttonText: {
+    color: '#FFF',
+    textAlign: 'center',
+  },
+});
