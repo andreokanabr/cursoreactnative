@@ -21,6 +21,8 @@ export default function App() {
   const [password, setPassword] = useState('');
   const [authUser, setAuthUser] = useState(null);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, user => {
       if (user) {
@@ -28,9 +30,11 @@ export default function App() {
           email: user.email,
           uid: user.uid,
         });
+        setLoading(false);
         return;
       }
       setAuthUser(null);
+      setLoading(false);
     });
   }, []);
 
@@ -74,11 +78,18 @@ export default function App() {
   return (
     <View style={est.container}>
       <StatusBar hidden={true} />
-      <Text
-        style={{ fontSize: 16, color: '#000', marginLeft: 8, marginBottom: 14 }}
-      >
-        Usuário Logado: {authUser && authUser.email}
-      </Text>
+      {loading && (
+        <Text
+          style={{
+            fontSize: 20,
+            marginLeft: 8,
+            color: '#000',
+            marginBottom: 8,
+          }}
+        >
+          Carregando informações...
+        </Text>
+      )}
       <Text style={{ marginLeft: 8, fontSize: 18, color: '#000' }}>Email:</Text>
       <TextInput
         style={est.input}
@@ -108,12 +119,14 @@ export default function App() {
         <Text style={est.buttonText}>Criar Conta</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity
-        style={[est.button, { backgroundColor: 'red' }]}
-        onPress={handleLogout}
-      >
-        <Text style={est.buttonText}>Sair da conta</Text>
-      </TouchableOpacity>
+      {authUser && (
+        <TouchableOpacity
+          style={[est.button, { backgroundColor: 'red' }]}
+          onPress={handleLogout}
+        >
+          <Text style={est.buttonText}>Sair da conta</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
