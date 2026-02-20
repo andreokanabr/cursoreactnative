@@ -8,7 +8,7 @@ import {
   TextInput,
   FlatList,
 } from 'react-native';
-import { db } from './firebaseConnection';
+import { db, auth } from './firebaseConnection';
 import {
   doc,
   getDoc,
@@ -20,6 +20,7 @@ import {
   updateDoc,
 } from 'firebase/firestore';
 import { UsersList } from './users';
+import { signOut } from 'firebase/auth';
 
 export function FormUsers() {
   const [nome, setNome] = useState('');
@@ -142,6 +143,10 @@ export function FormUsers() {
     setIsEditing('');
   }
 
+  async function handleLogout() {
+    await signOut(auth);
+  }
+
   return (
     <View style={est.container}>
       <StatusBar hidden={true} />
@@ -182,17 +187,14 @@ export function FormUsers() {
           )}
         </View>
       )}
-
       <TouchableOpacity style={{ marginTop: 8 }} onPress={handleTogle}>
         <Text style={{ textAlign: 'center' }}>
           {showForm ? 'Esconder Formulário' : 'Mostrar Formulário'}
         </Text>
       </TouchableOpacity>
-
       <Text style={{ marginTop: 14, marginLeft: 8, color: '#000' }}>
         Usuários
       </Text>
-
       <FlatList
         style={est.list}
         data={users}
@@ -201,6 +203,9 @@ export function FormUsers() {
           <UsersList data={item} handleEdit={item => editUser(item)} />
         )}
       />
+      <TouchableOpacity onPress={handleLogout} style={est.buttonLogout}>
+        <Text>Sair da conta</Text>
+      </TouchableOpacity>
     </View>
   );
 }

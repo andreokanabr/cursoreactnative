@@ -9,27 +9,110 @@ import {
 } from 'react-native';
 import { FormUsers } from './src/FormUsers';
 import { auth } from './src/firebaseConnection';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut,
+} from 'firebase/auth';
 
 export default function App() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [authUser, setAuthUser] = useState(null);
+
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, user => {
+      if (user) {
+        setAuthUser({
+          email: user.email,
+          uid: user.uid,
+        });
+        return;
+      }
+      setAuthUser(null);
+    });
+  }, []);
+
   async function handleCreateUser() {
-    const user = await createUserWithEmailAndPassword(
-      auth,
-      'teste@teste.com',
-      '123123',
-    );
+    const user = await createUserWithEmailAndPassword(auth, email, password);
     console.log(user);
   }
+
+  function handleLogin() {
+    signInWithEmailAndPassword(auth, email, password)
+      .then(user => {
+        console.log(user);
+        setAuthUser({
+          email: user.user.email,
+          uid: user.user.uid,
+        });
+      })
+      .catch(err => {
+        if (err.code === 'auth/missing-password') {
+          console.log('Senha é obrigatoria');
+          return;
+        }
+        console.log('ALGO DEU ERRADO: ', err.code);
+      });
+  }
+
+  async function handleLogout() {
+    await signOut(auth);
+
+    setAuthUser(null);
+  }
+
+  if (authUser) {
+    return (
+      <View style={est.container}>
+        <FormUsers />
+      </View>
+    );
+  }
+
   return (
     <View style={est.container}>
       <StatusBar hidden={true} />
-      {/* <FormUsers /> */}
+      <Text
+        style={{ fontSize: 16, color: '#000', marginLeft: 8, marginBottom: 14 }}
+      >
+        Usuário Logado: {authUser && authUser.email}
+      </Text>
       <Text style={{ marginLeft: 8, fontSize: 18, color: '#000' }}>Email:</Text>
-      <TextInput style={est.input} placeholder="Digite seu email..." />
+      <TextInput
+        style={est.input}
+        placeholder="Digite seu email..."
+        value={email}
+        onChangeText={text => setEmail(text)}
+      />
       <Text style={{ marginLeft: 8, fontSize: 18, color: '#000' }}>Senha:</Text>
-      <TextInput style={est.input} placeholder="Digite sua senha..." />
-      <TouchableOpacity style={est.button} onPress={handleCreateUser}>
+      <TextInput
+        style={est.input}
+        placeholder="Digite sua senha..."
+        value={password}
+        onChangeText={text => setPassword(text)}
+        secureTextEntry={true}
+      />
+      <TouchableOpacity
+        style={[est.button, { marginBottom: 8 }]}
+        onPress={handleLogin}
+      >
+        <Text style={est.buttonText}>Login</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[est.button, { marginBottom: 8 }]}
+        onPress={handleCreateUser}
+      >
         <Text style={est.buttonText}>Criar Conta</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[est.button, { backgroundColor: 'red' }]}
+        onPress={handleLogout}
+      >
+        <Text style={est.buttonText}>Sair da conta</Text>
       </TouchableOpacity>
     </View>
   );
