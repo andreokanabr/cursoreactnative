@@ -1,7 +1,6 @@
 import styled from 'styled-components/native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 
-export const Container = styled(SafeAreaView)`
+export const Container = styled.SafeAreaView`
   flex-direction: row;
   align-items: center;
   justify-content: flex-start;
@@ -9,7 +8,7 @@ export const Container = styled(SafeAreaView)`
   margin-left: 15px;
   margin-bottom: 15px;
   width: 100%;
-  max-height: 10%;
+  max-height: 60px;
 `;
 
 export const Title = styled.Text`

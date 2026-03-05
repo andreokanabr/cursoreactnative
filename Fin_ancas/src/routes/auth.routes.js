@@ -6,10 +6,10 @@ import SignUp from '../pages/SignUp';
 
 const AuthStack = createNativeStackNavigator();
 
-function AuthRoutes() {
-  return (
+function AuthRoutes(){
+  return(
     <AuthStack.Navigator>
-      <AuthStack.Screen
+      <AuthStack.Screen 
         name="SignIn"
         component={SignIn}
         options={{
@@ -21,10 +21,10 @@ function AuthRoutes() {
         name="SignUp"
         component={SignUp}
         options={{
-          headerStyle: {
+          headerStyle:{
             backgroundColor: '#3b3dbf',
             borderBottomWidth: 1,
-            borderBottomColor: '#00b94a',
+            borderBottomColor: '#00b94a'
           },
           headerTintColor: '#FFF',
           headerTitle: 'Voltar',
@@ -32,7 +32,7 @@ function AuthRoutes() {
         }}
       />
     </AuthStack.Navigator>
-  );
+  )
 }
 
 export default AuthRoutes;
