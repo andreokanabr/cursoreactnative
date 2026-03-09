@@ -62,10 +62,22 @@ React Native
 <tr>
 <td>
 
-React Native CLI com Firebase
+React Native CLI
 
 </td>
 </tr>
+
+</table>
+
+<table>
+<tr>
+<td>
+
+Firebase
+
+</td>
+</tr>
+
 </table>
 
 ## desafIOCACO
