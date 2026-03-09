@@ -36,12 +36,21 @@ React Native CLI
 <tr>
 <td>
 
-React Native CLI com Styled Components
+React Native CLI
 
 </td>
 </tr>
 </table>
 
+<table>
+<tr>
+<td>
+
+Styled Components
+
+</td>
+</tr>
+</table>
 ## Fin_ancas (usando o backend)
 
 <table>
