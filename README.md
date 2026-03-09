@@ -99,3 +99,27 @@ EXPO
 </td>
 </tr>
 </table>
+
+## notificaApp
+
+<table>
+<tr>
+<td>
+
+React Native CLI
+
+</td>
+</tr>
+
+</table>
+
+<table>
+<tr>
+<td>
+
+Notifee
+
+</td>
+</tr>
+
+</table>
