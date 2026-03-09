@@ -64,8 +64,6 @@ React Native
 </tr>
 </table>
 
-<details open="open"> 
- 
 ## rn_firebaseBD
 
 <table>
