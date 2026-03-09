@@ -7,6 +7,7 @@ import notifee, {
   AndroidImportance,
   TriggerType,
   TimestampTrigger,
+  RepeatFrequency,
 } from '@notifee/react-native';
 
 export default function App() {
@@ -120,6 +121,33 @@ export default function App() {
     console.log('Notificaçao cancelada com sucesso!');
   }
 
+  async function handleScheduleWeekly() {
+    const date = new Date(Date.now());
+
+    date.setMinutes(date.getMinutes() + 1);
+
+    const trigger: TimestampTrigger = {
+      type: TriggerType.TIMESTAMP,
+      timestamp: date.getTime(),
+      repeatFrequency: RepeatFrequency.WEEKLY,
+    };
+
+    await notifee.createTriggerNotification(
+      {
+        title: 'Lembrete javascript',
+        body: 'Está naa hora de estudar javaScript',
+        android: {
+          channelId: 'lembrete',
+          importance: AndroidImportance.HIGH,
+          pressAction: {
+            id: 'default',
+          },
+        },
+      },
+      trigger,
+    );
+  }
+
   return (
     <View style={styles.container}>
       <Text>Notificaçoes App</Text>
@@ -133,6 +161,8 @@ export default function App() {
       <Button title="Listar notificacoes" onPress={handleListNotifications} />
 
       <Button title="Cancelar Notificaçao" onPress={handleCancelNotification} />
+
+      <Button title="Agendar semanal" onPress={handleScheduleWeekly} />
     </View>
   );
 }
